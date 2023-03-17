@@ -1,0 +1,33 @@
+@charset "UTF-8";
+
+*{
+	font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.flex-container {
+   display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.flex-item {
+   text-align: center;
+   justify-content: space-around;
+   border:2px solid lightgray;
+   padding: 20px;
+}
+
+a:link {
+	text-decoration-line: none;
+	color: black;
+}
+
+a:visited {
+	color: black;
+}
+
+
+
+.tableindex {
+   text-align: center;
+}
