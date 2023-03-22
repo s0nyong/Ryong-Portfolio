@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns="http://www.thymeleaf.org"
+xmlns: sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="fragments :: page_head('Login - Bowwow')"/>
+
+<body>
+
+<div class="container-fluid">
+	
+	<div th:replace="navigation :: menu"></div>
+	
+   <div class="container">
+	  <div style="text-align:center;">
+	  	<a th:href="@{/}"><img th:src="@{/images/review.png}" style="width: 200px;"/></a>
+	  </div>
+      <div style="border: dotted darkorange; padding: 30px;">
+		<form th:action="@{/login}" method="POST">
+			<div th:if="${param.error}">
+				<p class="text-danger">[[${session.SPRING_SECURITY_LAST_EXCEPTION.message}]]</p>
+			</div>
+			<div th:if="${param.logout}">
+				<p class="text-danger">You have been logged out.</p>
+			</div>
+			
+			<div class="form-group">
+				<label for="exampleInputEmail1">Email address</label>
+				<input type="email" name="email" class="form-control" aria-describedby="emailHelp" placeholder="Enter email" required>
+				<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+			</div>
+			<div class="form-group">
+				<label for="exampleInputPassword1">Password</label>
+				<input type="password" name="password" class="form-control" placeholder="Password"required>
+			</div>
+
+			<button type="submit" class="btn btn-warning">로그인</button>
+			<a href="https://kauth.kakao.com/oauth/authorize?client_id=b56fc54652eee24b05ff45ef46f5c893&redirect_uri=http://localhost:3333/bowwow/auth/kakao/callback&response_type=code"><img height="40px" th:src="@{/images/kakao_login_medium.png}"></a>
+		</form>
+	  </div>
+   </div>
+ 
+   <div th:replace="fragments :: footer"></div>
+</div>
+    
+</body>
+</html>

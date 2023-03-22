@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="menu">
+   
+   
+<body>
+
+<div class="container justify-content-center">
+
+   <nav class="navbar navbar-expand-sm bg-white">
+      
+      <div class="col-lg-3 col-md-12 col-sm-12">
+		  <div class="justify-content-center">
+      		<a class="navbar-brand" th:href="@{/}"><img th:src="@{/images/cleanlogo.png}" style="width:80%; height:80%;"/></a>
+      	  </div>	
+      </div>
+      
+      <div class="col-lg-6 col-md-12 col-sm-12" style="width: 100%;">
+	      <form th:action="@{/product/page/1}">
+		      <input name="keyword" th:value="${keyword}" type="text" placeholder="무엇을 찾으세요?											🔎" >
+	      </form>
+      </div>
+      
+      <div class="col-lg-3 col-md-12 col-sm-12">
+		<div sec:authorize="isAuthenticated()" class="d-flex justify-content-center">
+			<a th:href="@{/likeit/list}" class="fas fa-heart" style="color: #bf6e22; font-size:30px"></a>
+	    	&nbsp;&nbsp;&nbsp;
+	        <a th:href="@{/cart}" class="fas fa-shopping-cart" style="color: #bf6e22; font-size:30px"></a>
+	    	&nbsp;&nbsp;&nbsp;
+	        <div class="dropdown">
+  				<a href="#" class="fas fa-user" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: #bf6e22; font-size:30px"></a>
+
+			  <div class="dropdown-menu" aria-labelledby="userDropdown">
+			    <a class="dropdown-item" th:href="@{/users}">내 정보</a>
+			    <a class="dropdown-item" th:href="@{/order/orderlist}">내 구매 내역</a>
+			    <a class="dropdown-item" th:href="@{/inquiry/my/1}">내 문의 내역</a>
+			    <a class="dropdown-item" th:href="@{/notice/page/1}">공지사항</a>
+			  </div>
+			</div>
+		</div>
+      </div>
+      
+   </nav>
+   
+   <nav class="navbar navbar-expand-sm bg-white" style="padding-right: 65px;">
+
+     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+       <span class="navbar-toggler-icon"></span>
+     </button>
+     
+     <div class="collapse navbar-collapse justify-content-between" id="collapsibleNavbar">
+       
+      <ul class="navbar-nav">
+      
+      <li class="nav-item dropdown">
+		  <div class="dropdown">
+		    <button class="btn dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		      카테고리
+		    </button>
+		    <form th:action="@{/category}" method="get">
+		      <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
+		        <li class="dropdown-submenu" th:each="parentCategory: ${parentCategories}">
+		          <a class="dropdown-item" tabindex="-1" th:href="@{/category/{categoryId}/1(categoryId=${parentCategory.id})}" th:text="${parentCategory.categoryName}"></a>
+		          <ul class="dropdown-menu">
+		            <li class="dropdown-item" th:each="childCategory: ${parentCategory.children}">
+		              <a tabindex="-1" th:href="@{/category/{categoryId}/1(categoryId=${childCategory.id})}" th:text="${childCategory.categoryName}"></a>
+		            </li>
+		          </ul>
+		        </li>
+		      </ul>
+		    </form>
+		  </div>
+	</li>
+
+         <li class="nav-item">
+            <a class="nav-link " style="color: #bf6e22;" th:href="@{/product/sale/1}">핫딜</a>
+         </li>
+         
+         <li class="nav-item">
+            <a class="nav-link" style="color: #bf6e22;" th:href="@{/product/rank/1}">랭킹</a>
+         </li>
+         
+         <li class="nav-item">
+            <a class="nav-link" style="color: #bf6e22;" th:href="@{/product/recent/1}">신상품</a>
+         </li>
+         
+         <li class="nav-item">
+            <a class="nav-link" style="color: #bf6e22;" th:href="@{/product/brand}">브랜드</a>
+         </li>
+      
+      </ul>
+      
+      <ul class="navbar-nav">
+		  <li class="nav-item">
+            <a th:href="@{/login}"><button sec:authorize="isAnonymous()" class="btn btn-outline-warning" style="border-radius: 18px;">로그인</button></a>
+         </li>
+         &nbsp;&nbsp;
+         <li class="nav-item">
+            <a th:href="@{/users}"><button sec:authorize="isAnonymous()" class="btn btn-outline-warning" style="border-radius: 18px;">회원가입</button></a>
+         </li>
+         &nbsp;&nbsp;
+         <li class="nav-item">
+	         <form th:action="@{/logout}" method="post" name="logoutForm">
+			     <button type="submit" sec:authorize="isAuthenticated()" class="btn btn-outline-warning" style="border-radius: 18px;">로그아웃</button>
+			 </form>
+		 </li>
+	  </ul>
+         
+     </div>  
+   </nav>
+   <hr>
+</div>   
+
+</div>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+ xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+ 
+<head th:replace="fragments :: page_head('Home - Bowwow')">
+
+</head>	
+<body>
+
+	<div th:replace="navigation :: menu"></div>
+	
+<div class="container justify-content-center buysuccess">
+	<div>
+	  <br><h3 style="color: #bf6e22; text-align: center;">[[${userName}]]님의 구매내역</h3><br>
+	</div>
+	
+	<div id="order" th:each="orderlist: ${orderlist}">
+		<button class="accordion">
+			<div>
+				주문번호: [[${orderlist.id}]] &nbsp;&nbsp;&nbsp; 주문일시: [[${orderlist.regDate}]] &nbsp;&nbsp;&nbsp; 총 [[${orderlist.order_detail.size()}]]건
+			</div>
+		</button>
+		<div class="panel">
+			<div id="orderdetail" th:each="orderDetail: ${orderlist.order_detail}">
+				<br>
+				<h5 style="margin-left: 30px; margin-bottom: 10px;">[[${orderDetail.status}]]</h5>
+				<div class="row">
+					<div class="col-lg-3 col-md-12 col-sm-12 d-flex justify-content-center align-items-center buying-info">
+							<a th:href="@{'/product/detail/1/' + ${orderDetail.product.id}}"><img th:src="@{${orderDetail.product.mainImagePath}}" style="width:100px" class="img-fluid"/></a>
+						</a>
+					</div>
+					<div class="col-lg-2 col-md-12 col-sm-12">
+						<p>상품명:</p>
+						<p>구매수량:</p>
+						<p>결제금액:</p>
+					</div>
+					<div class="col-lg-4 col-md-12 col-sm-12">
+						<p>[[${orderDetail.product.mainName}]] [[${orderDetail.product.subName}]]</p>
+						<p>[[${orderDetail.count}]]개</p>
+						<p>[[${orderDetail.product.price * (1-orderDetail.product.discount)}]]원</p>
+					</div>
+				</div>
+				<br>
+				<div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-center align-items-center row">
+					<form th:action="@{/order/updateStatus}" method="get" class="row">
+						<input type="hidden" name="orderDetailId" th:value="${orderDetail.id}"/>
+						<div class="col">
+			        	<button th:if="${#strings.equals(orderDetail.status, '배송준비') or #strings.equals(orderDetail.status, '배송완료')}" th:disabled="false" type="submit'" name="status" value="cancel" class="btn btn-outline-secondary" style="width:100%;" >주문취소</button>
+			        	<button th:unless="${#strings.equals(orderDetail.status, '배송준비') or #strings.equals(orderDetail.status, '배송완료')}" th:disabled="true" type="submit'" name="status" value="cancel" class="btn btn-outline-secondary" style="width:100%;" >주문취소</button>
+			        	</div>
+			        	&nbsp;&nbsp;&nbsp;
+			        	<div class="col">
+			        	<button th:if="${#strings.equals(orderDetail.status, '배송완료')}" th:disabled="false" type="submit" name="status" value="confirm" class="btn btn-outline-secondary" style="width:100%;">구매확정</button>
+		        		<button th:unless="${#strings.equals(orderDetail.status, '배송완료')}" th:disabled="true" type="submit" name="status" value="confirm" class="btn btn-outline-secondary" style="width:100%;">구매확정</button>
+		        		</div>
+		        	</form> 
+				</div>
+				<hr>
+			</div>
+		</div>
+		
+	</div>
+
+</div>
+	
+	
+  	<div th:replace="fragments :: footer"></div>
+
+<script>
+	var acc = document.getElementsByClassName("accordion");
+	var i;
+	
+	for (i = 0; i < acc.length; i++) {
+	  acc[i].addEventListener("click", function() {
+	    this.classList.toggle("active");
+	    var panel = this.nextElementSibling;
+	    if (panel.style.maxHeight) {
+	      panel.style.maxHeight = null;
+	    } else {
+	      panel.style.maxHeight = panel.scrollHeight + "px";
+	    } 
+	  });
+	}
+</script>
+
+</body>      
+</html>

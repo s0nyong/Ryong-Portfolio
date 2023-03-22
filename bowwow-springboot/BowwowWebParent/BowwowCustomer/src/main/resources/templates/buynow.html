@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+ xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+ 
+<head th:replace="fragments :: page_head('Home - Shope Admin')">
+
+</head>	
+<body>
+
+	<div th:replace="navigation :: menu"></div>
+	
+<div class="container justify-content-center">	
+	<div>
+	  <br>
+	  <h3>구매하기</h3>
+	</div>
+	
+	<div>
+		<hr>
+		<h5>상품정보</h5>	
+		<br>
+		<div th:each="selectedCarts:${selectedCarts}" class="row">
+            <input type="hidden" name="PurchaseCartId" th:value="${selectedCarts.id}"/>
+            <input type="hidden" name="PurchaseProId" th:value="${selectedCarts.product.id}"/>
+            <input type="hidden" name="PurchaseProCount" th:value="${selectedCarts.count}"/>
+            <div class="col-lg-4 col-md-12 col-sm-12 d-flex justify-content-center align-items-center">
+               <a class="navbar-brand" th:href="@{'/product/detail/1/' + ${selectedCarts.product.id}}">
+                  <img th:src="@{${selectedCarts.product.mainImagePath}}" style="width:80%; height:80%;"/>
+               </a>
+            </div>
+            <div class="col-lg-2 col-md-12 col-sm-12 product-info">
+               <p>상품명:</p>
+               <p>판매자:</p>
+               <p>상품금액:</p>
+               <p>할인율:</p>
+               <p>구매수량:</p>
+            </div>
+            <div class="col-lg-4 col-md-12 col-sm-12">
+               <p>[[${selectedCarts.product.mainName}]] [[${selectedCarts.product.subName}]]</p>
+               <p>[[${selectedCarts.product.brand}]]</p>
+               <p>[[${selectedCarts.product.price}]]원</p>
+            <div th:each="cart : ${selectedCarts}">
+			   <p th:text="${#numbers.formatDecimal(cart.product.discount * 100, 0, '0')} + '%'"></p>
+			</div>
+               <p>[[${selectedCarts.count}]]개</p>
+            </div>
+         </div>
+         <input type="hidden" name="newPoint" th:value="${newPoint}"/>
+         <input id="purchaseSubmit" type="submit" style="display: none;" />
+      </form>   
+	</div>
+	
+	<div>
+		<hr>
+		<h5>최종결제금액</h5>	
+		<br>
+		<div class="row">
+			<div class="col-lg-2 col-md-12 col-sm-12 buying-info">
+				<p>총 상품금액:</p>
+				<p>할인액:</p>
+				<p>사용가능 포인트:</p>
+				<p>총 결제금액:</p>
+			</div>
+			<div class="col-lg-6 col-md-12 col-sm-12 product-info">
+				<p>[[${totalPrice}]]원</p>
+				<p>(-)[[${totalDiscount}]]원</p>
+				<p>[[${availablePoint}]]원</p>
+				<p>[[${finalPrice}]]원</p>
+			</div>
+		</div>
+	</div>
+	
+	<div>
+		<hr>
+		<h5>배송정보</h5>	
+		<br>
+		<div class="buying-info">
+			주소:&nbsp;&nbsp;<input type="text" style="width: 55%;" id="address-input"> 
+			&nbsp;&nbsp;&nbsp; <button  class="btn btn-info" onclick="getAddress()">기본주소 불러오기</button>
+		</div>
+	</div>
+	
+	<div>
+		<hr>
+		<h5>포인트 혜택</h5>	
+		<br>
+		<div class="row">
+			<div class="col-lg-2 col-md-12 col-sm-12 buying-info">
+				<p>고객님의 등급:</p>
+				<p>적립예상 포인트:</p>
+			</div>
+			<div class="col-lg-6 col-md-12 col-sm-12 product-info">
+				<p>[[${userRole}]]</p>
+				<p>[[${newPoint}]]원</p>
+			</div>
+		</div>
+	</div>
+	
+	<div>
+		<hr>
+		<h5>결제수단</h5>	
+		<br>
+		<form th:action="@{/order/save}" method="post">
+		  <div th:each="selectedCarts:${selectedCarts}" class="row">
+            <input type="hidden" name="PurchaseCartId" th:value="${selectedCarts.id}"/>
+            <input type="hidden" name="PurchaseProId" th:value="${selectedCarts.product.id}"/>
+            <input type="hidden" name="PurchaseProCount" th:value="${selectedCarts.count}"/>
+            <input type="hidden" name="newPoint" th:value="${newPoint}"/>
+          </div>
+		  <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+		  <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.1.5.js"></script>
+		  <div class="product-info">
+			  <button type="button" class="btn btn-info" id="payment-btn">일반결제</button>&nbsp;
+			  <button type="button" class="btn btn-info" id="payment-btn1">카카오페이</button>&nbsp;
+			  <button type="button" class="btn btn-info" id="payment-btn2">토스페이</button>
+		  </div>
+		
+		</form>
+	</div>
+</div>	
+
+  	<div th:replace="fragments :: footer"></div>
+  	
+<script>
+	
+	function getAddress() {
+
+		csrfValue = $("input[name='_csrf']").val();		
+		
+		url = "[[@{/order/getAddress}]]";
+		
+		params = {_csrf: csrfValue};
+		
+		$.post(url, params, function (response) {
+			$('#address-input').val(response);
+		});
+		return false;
+	}
+	
+	var IMP = window.IMP;
+	IMP.init('imp21243188');
+	  
+	$('#payment-btn, #payment-btn1, #payment-btn2').on('click', function() {
+	  if ($(this).attr('id') == 'payment-btn') {
+	    pg = 'html5_inicis';
+	  } else if ($(this).attr('id') == 'payment-btn1'){
+	    pg = 'kakaopay.TC0ONETIME';
+	  } else if($(this).attr('id') == 'payment-btn2'){
+	     pg = 'tosspay';
+	  }
+	
+	  IMP.request_pay({
+	    pg: pg,
+	    pay_method: 'card',
+	    merchant_uid: 'merchant_' + new Date().getTime(),
+	    name: 'bowwow',
+	    amount: Number("[[${finalPrice}]]"),
+	    buyer_email: "[[${user.email}]]",
+	    buyer_name: "[[${user.name}]]",
+	    buyer_tel: "[[${user.phone}]]",
+	    buyer_addr: "[[${user.address}]]",
+	  }, function(rsp) {
+	    if (rsp.success) {
+	      var imp_uid = rsp.imp_uid;
+	      $('form').append('<input type="hidden" name="imp_uid" value="' + imp_uid + '">');
+	      $('form').submit();
+	    } else {
+	      alert('결제에 실패하였습니다. 에러 내용: ' + rsp.error_msg);
+	    }
+	  });
+	});
+	
+</script>
+
+</body>      
+</html>

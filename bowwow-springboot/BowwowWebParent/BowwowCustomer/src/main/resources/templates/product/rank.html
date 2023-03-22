@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns="http://www.thymeleaf.org">
+	
+<head th:replace="fragments :: page_head('Products - Bowwow')"/>
+
+<body>
+	
+	<div class="recent-products-container" th:if="${recentProducts != null}" style="position: fixed;">
+		<h3 style="color: darkgray;">최근본 상품</h3>
+		<th:block th:each="recentProducts:${recentProducts}">
+			<a class="text-dark" th:href="@{'/product/detail/' + ${recentProducts.id} + '/1'}" aria-disabled="false">
+				<div style="text-align: center;">
+					<img th:src="@{${recentProducts.mainImagePath}}" style="width:120px"/>
+					
+				</div>
+			</a>
+		</th:block>
+	</div>
+	
+<div class="container justify-content-center">
+	
+	<div th:replace="navigation :: menu"></div>
+   
+   <h3>랭킹<h5 id="date"></h5></h3>
+   <div class="row">
+	   <th:block th:each="pro:${listproduct}">
+		   <div class="col-md-4 margin">
+				<div class="card">
+					<div class="ribbon-wrapper">
+						<div class="ribbon blue">BEST</div>
+					</div>
+					<a th:href="@{'/product/detail/' + ${pro.id} + '/1'}">
+						<img th:src="@{${pro.mainImagePath}}" style="width:100%" class="card-img-top img-big" />
+					</a>
+					<div class="card-body">
+						<h5 class="card-title">[[${pro.mainName}]] [[${pro.subName}]]</h5>
+						<div class="card-content">
+									<div class="card-text">[[${pro.categoryId}]]
+										<p><i class="fa-solid fa-star" style="color: #ffd70f; "></i>[[${new java.text.DecimalFormat("0.0").format(pro.score)}]]점</p>
+									</div>
+									<div class="card-bottom">
+										<div>
+											<h3 class="card-title text-danger">[[${pro.price}]]원</h3>									
+										</div>
+										<div sec:authorize="isAuthenticated()">
+											<p th:each="userlikes:${userLikes}" th:id="|like${pro.id}|" th:if="${userlikes == pro.id}"
+												class="fa-solid fa-heart icon-red float-right" th:onclick="|dislike(${pro.id})|" style="font-size: 20px;"></p>
+											<p th:each="userUnLikes:${userUnLikes}" th:id="|like${pro.id}|" th:if="${userUnLikes == pro.id}"
+												class="fa-regular fa-heart icon-red float-right" th:onclick="|like(${pro.id})|" style="font-size: 20px;"></p>
+										</div>
+										<div sec:authorize="isAnonymous()">
+											<p class="fa-regular fa-heart icon-red float-right" th:onclick="|like(${pro.id})|" style="font-size: 20px;"></p>
+										</div>
+									</div>			
+								</div>						
+							</div>
+						</div>
+					</div>
+				</th:block>
+			</div>
+	   
+</div><br><br>
+   	
+	<div th:if="${totalPages > 1}">
+    <nav>
+        <ul class="pagination justify-content-center">
+            <li th:class="${currentPage == 1 ? 'page-item disabled' : 'page-item'}">
+                <a class="page-link" th:href="@{/product/rank/1}">First</a>
+            </li>
+
+            <li th:class="${currentPage > 1 ? 'page-item active' : 'page-item disabled'}">
+                <a class="page-link" th:href="@{'/product/rank/' + ${currentPage - 1}}">Previous</a>
+            </li>
+
+            <li th:class="${i == currentPage ? 'page-item active' : 'page-item'}" th:each="i:${#numbers.sequence(1,totalPages)}">
+                <a class="page-link" th:href="@{'/product/rank/' + ${i}}" th:text="${i}">1</a>
+            </li>
+
+            <li th:class="${currentPage < totalPages ? 'page-item active' : 'page-item disabled'}">
+                <a class="page-link" th:href="@{'/product/rank/' + ${currentPage + 1}}">Next</a>
+            </li>
+
+            <li th:class="${currentPage == totalPages ? 'page-item disabled' : 'page-item'}">
+                <a class="page-link" th:href="@{'/product/rank/' + ${totalPages}}">Last</a>
+            </li>
+        </ul>
+    </nav>
+	</div>
+	
+	<div class="text-center m-1" th:if="${totalItems > 0}">
+		<span>Showing products # [[${startCount}]] to [[${endCount}]] of [[${totalItems}]]</span>
+	</div>
+	
+	<div class="text-center m-1" th:unless="${totalItems > 0}">
+		<div><img th:src="@{/images/dogwithdoll.png}" style="margin:0 35% 0 35%; width: 30%; height: 30%;"/> </div>
+		<span>해당 상품을 찾을수 없습니다.</span>
+	</div>
+	
+	<div class="modal fade text-center" id="modalDialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="modalTitle">Warning</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+				
+				<div class="modal-body">
+					<span id="modalBody"></span>
+				</div>
+				
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-dismiss="modal">다음에</button>
+					<button type="button" class="btn btn-danger" data-dismiss="modal" onclick="login()">확인</button>
+				</div>
+			</div>
+		</div>
+	  </div>
+			
+	<div th:replace="fragments :: footer"></div>
+
+<script type="text/javascript">
+	
+	function login(){
+		window.location = "[[@{/login}]]";
+	}
+		
+		
+	function like(id) {
+			url = "[[@{/product/likeit/}]]";
+			url+=id;
+			console.log(url)
+			csrfValue = $("input[name='_csrf']").val();
+		
+			params = {_csrf: csrfValue};
+			btn = $(this);
+			console.log(btn);
+			$.post(url, params, function(response){
+				if(response == "OK"){					
+				if($('#like'+id).attr("class") == "fa-regular fa-heart icon-red float-right"){
+					$('#like'+id).attr("class","fa-solid fa-heart icon-red float-right");
+					$('#like'+id).attr("onclick","dislike("+id+")");
+				}
+			
+				}else if(response == "NotUser"){
+					showModalDialog("ㅜㅜ","로그인 하시겠습니까?")
+				}
+			}).fail(function(){
+				showModalDialog("Error", "Could not connect to the server");
+			});
+			return false;
+		}
+		
+		function dislike(id) {
+			url = "[[@{/product/dislike/}]]";
+			url+=id;
+			console.log(url)
+			csrfValue = $("input[name='_csrf']").val();
+		
+			params = {_csrf: csrfValue};
+			btn = $(this);
+			console.log(btn);
+			$.post(url, params, function(response){
+				if(response == "OK"){					
+					if($('#like'+id).attr("class") == "fa-solid fa-heart icon-red float-right"){
+						$('#like'+id).attr("onclick","like("+id+")");
+						$('#like'+id).attr("class","fa-regular fa-heart icon-red float-right");
+					}
+				}else if(response == "NotUser"){
+					showModalDialog("ㅜㅜ","로그인 하시겠습니까?")
+				}
+			}).fail(function(){
+				showModalDialog("Error", "Could not connect to the server");
+			});
+			return false;
+		}
+
+	function showModalDialog(title,message){
+				$("#modalTitle").text(title);
+				$("#modalBody").text(message);
+				$("#modalDialog").modal();
+			}
+
+	var date = new Date();
+    var dateElement = document.getElementById("date");
+    dateElement.innerHTML = date.toLocaleDateString() + " 기준";
+</script>
+</body>
+</html>

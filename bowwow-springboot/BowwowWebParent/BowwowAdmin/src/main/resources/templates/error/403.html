@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns="http://www.thymeleaf.org"
+xmlns: sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="fragments :: page_head('Product-Bowwow')"/>  
+
+<body>
+	<div class="container-fluid">
+		<div th:replace="navigation :: menu"></div>
+		<div class="container">			
+			<div style="display: inline-block; padding: 100px 100px 100px 370px;">
+				<h2 style="color: darkgrey;">접근권한이 없습니다.(403)</h2>
+			</div>			
+		</div>
+		<div th:replace="fragments :: footer"></div>
+	</div>
+</body>
+</html>

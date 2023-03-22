@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns="http://www.thymeleaf.org">
+   
+<head th:replace="fragments :: page_head('Orders - Bowwow Admin')"/>
+
+<body>
+
+   
+<div class="container-fluid">
+	<div th:replace="navigation :: menu"></div>
+		<div class="container-fluid">
+			<div class="container center;">
+				<div>
+					<h1 style="color: darkgrey;">Bowwow Orders</h1>     	
+				</div>
+				
+				<div>
+					<form th:action="@{/order/1}" class="form-inline m-3" method="GET">
+						<input type="hidden" name="sortField" th:value="${sortField}">
+						<input type="hidden" name="sortDir" th:value="${sortDir}">
+						Filter:&nbsp;
+						<input type="search" name="keyword" th:value="${keyword}" class="form-control" required/>
+						&nbsp;&nbsp;
+						<button type="submit" style="border-radius: 5px; background-color: darkgray; color:white; 
+			     	border: none;  height: 40px;">
+							<i class="fas fa-search"></i>
+						</button>
+						&nbsp;&nbsp;
+						<button type="button" style="border-radius: 5px; background-color: darkgray; color:white; 
+			     	border: none;  height: 40px;" onclick="clearFilter()">
+							<i class="fas fa-eraser"></i>
+						</button>
+					</form>	
+				</div>
+			</div>
+			
+			
+			<div class="col-lg-10 col-md-12 col-sm-12 container justify-content-center">
+				<table class="table table-bordered table-striped table-hover table-responsive-l" style="text-align: center;" >
+					<thead style="background-color: darkgray;">
+						<tr>
+							<th style="width:9%; font-size:15px;">
+								<a th:if="${sortField != 'id'}" th:href="@{'/order/'+${currentPage}+'?sortField=id&sortDir='+${sortDir}}" class="text-white">주문번호</a>
+				            	<a th:if="${sortField == 'id'}" th:href="@{'/order/'+${currentPage}+'?sortField=id&sortDir='+${reverseSortDir}}" class="text-white">주문번호</a>
+				            	<span th:if="${sortField == 'id'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up icon-white' : 'fas fa-sort-down icon-white'}"></span>
+							</th>
+							<th>
+								<a th:if="${sortField != 'order.regDate'}" th:href="@{'/order/'+${currentPage}+'?sortField=order.regDate&sortDir='+${sortDir}}" class="text-white">주문일</a>
+				            	<a th:if="${sortField == 'order.regDate'}" th:href="@{'/order/'+${currentPage}+'?sortField=order.regDate&sortDir='+${reverseSortDir}}" class="text-white">주문일</a>
+				            	<span th:if="${sortField == 'order.regDate'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up icon-white' : 'fas fa-sort-down icon-white'}"></span>
+							</th>
+							<th>
+								<a th:if="${sortField != 'order.user.name'}" th:href="@{'/order/'+${currentPage}+'?sortField=order.user.name&sortDir='+${sortDir}}" class="text-white">구매자</a>
+				            	<a th:if="${sortField == 'order.user.name'}" th:href="@{'/order/'+${currentPage}+'?sortField=order.user.name&sortDir='+${reverseSortDir}}" class="text-white">구매자</a>
+				            	<span th:if="${sortField == 'order.user.name'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up icon-white' : 'fas fa-sort-down icon-white'}"></span>
+							</th>
+							<th>
+								<a th:if="${sortField != 'product.mainName'}" th:href="@{'/order/'+${currentPage}+'?sortField=product.mainName&sortDir='+${sortDir}}" class="text-white">구매품목</a>
+				            	<a th:if="${sortField == 'product.mainName'}" th:href="@{'/order/'+${currentPage}+'?sortField=product.mainName&sortDir='+${reverseSortDir}}" class="text-white">구매품목</a>
+				            	<span th:if="${sortField == 'product.mainName'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up icon-white' : 'fas fa-sort-down icon-white'}"></span>
+							</th>
+							<th>
+								<a th:if="${sortField != 'count'}" th:href="@{'/order/'+${currentPage}+'?sortField=count&sortDir='+${sortDir}}" class="text-white">수량</a>
+				            	<a th:if="${sortField == 'count'}" th:href="@{'/order/'+${currentPage}+'?sortField=count&sortDir='+${reverseSortDir}}" class="text-white">수량</a>
+				            	<span th:if="${sortField == 'count'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up icon-white' : 'fas fa-sort-down icon-white'}"></span>
+							</th>	
+							<th>
+								<a th:if="${sortField != 'price'}" th:href="@{'/order/'+${currentPage}+'?sortField=price&sortDir='+${sortDir}}" class="text-white">결제금액</a>
+				            	<a th:if="${sortField == 'price'}" th:href="@{'/order/'+${currentPage}+'?sortField=price&sortDir='+${reverseSortDir}}" class="text-white">결제금액</a>
+				            	<span th:if="${sortField == 'price'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up icon-white' : 'fas fa-sort-down icon-white'}"></span>
+							</th>	
+							<th style="width:9%; font-size:15px;">
+								<a th:if="${sortField != 'status'}" th:href="@{'/order/'+${currentPage}+'?sortField=status&sortDir='+${sortDir}}" class="text-white">주문상태</a>
+				            	<a th:if="${sortField == 'status'}" th:href="@{'/order/'+${currentPage}+'?sortField=status&sortDir='+${reverseSortDir}}" class="text-white">주문상태</a>
+				            	<span th:if="${sortField == 'status'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up icon-white' : 'fas fa-sort-down icon-white'}"></span>
+							</th>
+							<th>
+								<a th:if="${sortField != 'updateDate'}" th:href="@{'/order/'+${currentPage}+'?sortField=updateDate&sortDir='+${sortDir}}" class="text-white">상태변경일</a>
+				            	<a th:if="${sortField == 'updateDate'}" th:href="@{'/order/'+${currentPage}+'?sortField=updateDate&sortDir='+${reverseSortDir}}" class="text-white">상태변경일</a>
+				            	<span th:if="${sortField == 'updateDate'}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up icon-white' : 'fas fa-sort-down icon-white'}"></span>
+							</th>
+							<th style="width:12%;" class="text-white">주문상태 변경</th>		
+						</tr>	
+					</thead>
+					<tbody>
+						<tr th:each="listOrderDetails: ${listOrders}">
+							<td>[[${listOrderDetails.order.id}]] - [[${listOrderDetails.id}]]</td>
+							<td>[[${listOrderDetails.order.regDate}]]</td>
+							<td>[[${listOrderDetails.order.user.name}]]</td>
+							<td>[[${listOrderDetails.product.mainName}]] [[${listOrderDetails.product.subName}]]</td>
+							<td>[[${listOrderDetails.count}]]</td>
+							<td style="text-align:right;">[[${listOrderDetails.price}]]원 </td>
+							<td>[[${listOrderDetails.status}]]</td>
+							<td>[[${listOrderDetails.updateDate}]]</td>
+							<td>
+								<div class="row" th:if="${#strings.equals(listOrderDetails.status, '배송준비') 
+														or #strings.equals(listOrderDetails.status, '배송중')
+														or #strings.equals(listOrderDetails.status, '배송완료')
+														or #strings.equals(listOrderDetails.status, '환불요청')}" style="margin-left:20%;">
+									<form th:action="@{/order/update}" method="get">
+										<input type="hidden" name="theId" th:value="${listOrderDetails.id}">
+										<select name="updateStatus" required>
+											<option th:value="${listOrderDetails.status}" disabled hidden="">[[${listOrderDetails.status}]]</option>
+											<option th:value="배송준비">배송준비</option>
+											<option th:value="배송중">배송중</option>
+											<option th:value="배송완료">배송완료</option>
+											<option th:value="환불요청">환불요청</option>
+											<option th:value="환불승인">환불승인</option>
+											<option th:value="구매확정">구매확정</option>
+										</select>
+										<button type="submit" onclick="return confirm('환불승인 또는 구매확정은 취소할 수 없습니다. 수정하시겠습니까?')"
+										style="border-radius: 5px; background-color: darkgray; color:white; border: none; height: 40px;">수정</button>
+									</form>
+								</div>
+							</td>	
+						</tr>
+					</tbody>	
+				</table>
+			<div>	
+	<div th:if="${totalPages > 1}">
+	    <nav>
+	        <ul class="pagination justify-content-center">
+	            <li th:class="${currentPage == 1 ? 'page-item disabled' : 'page-item'}">
+	                <a class="page-link" th:if="${sortField == null}" th:href="@{/order/1}">First</a>
+					<a class="page-link" th:if="${sortField != null}" th:href="@{'/order/1' + '?sortField=' + ${sortField} +'&sortDir='+${sortDir}}">First</a>
+	            </li>
+	
+	            <li th:class="${currentPage > 1 ? 'page-item active' : 'page-item disabled'}">
+	                <a class="page-link" th:if="${sortField == null}" th:href="@{'/order/' + ${currentPage -1}}">Previous</a>
+					<a class="page-link" th:if="${sortField != null}" th:href="@{'/order/' + ${currentPage -1}+'?sortField=' + ${sortField} +'&sortDir='+${sortDir}}">Previous</a>
+	            </li>
+	
+	            <li th:class="${i == currentPage ? 'page-item active' : 'page-item'}" th:each="i:${#numbers.sequence(1,totalPages)}">
+	                <a class="page-link" th:if="${sortField == null}" th:href="@{'/order/' + ${i}}" th:text="${i}"></a>
+					<a class="page-link" th:if="${sortField != null}" th:href="@{'/order/' + ${i} +'?sortField=' + ${sortField} +'&sortDir='+${sortDir}}" th:text="${i}"></a>
+	            </li>
+	            </li>
+	
+	            <li th:class="${currentPage < totalPages ? 'page-item active' : 'page-item disabled'}">
+	                <a class="page-link" th:if="${sortField == null}" th:href="@{'/order/' + ${currentPage + 1}}">Next</a>
+					<a class="page-link" th:if="${sortField != null}" th:href="@{'/order/' + ${currentPage + 1} +'?sortField=' + ${sortField} +'&sortDir='+${sortDir}}">Next</a>
+	            </li>
+	
+	            <li th:class="${currentPage == totalPages ? 'page-item disabled' : 'page-item'}">
+	                <a class="page-link" th:if="${sortField == null}" th:href="@{'/order/' +${totalPages}}">Last</a>
+					<a class="page-link" th:if="${sortField != null}" th:href="@{'/order/' +${totalPages} +'?sortField=' + ${sortField} +'&sortDir='+${sortDir}}">Last</a>
+	            </li>
+	        </ul>
+	    </nav>
+	</div>
+			
+	<div th:replace="fragments :: footer"></div>
+</div>   
+
+<script type="text/javascript">	
+	function clearFilter(){
+		window.location = "[[@{/order}]]";
+	}
+</script>
+</body>
+</html>

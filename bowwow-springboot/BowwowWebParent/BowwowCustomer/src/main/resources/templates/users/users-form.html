@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns="http://www.thymeleaf.org"
+xmlns: sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+   
+<head th:replace="fragments :: page_head('Users - Bowwow Customer')"/>
+<body>
+	<script type="text/javascript">
+		$(document).ready(function(){
+         $("#historyBackBtn").on("click", function(){
+            window.location = "[[@{/}]]";
+         });
+        });
+        
+
+		function checkUniqueNick(form) {
+				url = "[[@{/users/check_nick}]]";
+				userNick = $("#nickName").val();
+				userEmail = $('#email').val();
+				csrfValue = $("input[name='_csrf']").val();
+				
+				userId = $("#id").val();
+				params = {id: userId, email: userEmail, nickName: userNick, _csrf: csrfValue};
+				
+				$.post(url, params, function(response){
+					if(response == "OK"){					
+						form.submit();
+					}else if(response == "DuplicateEmail"){
+						showModalDialog( userEmail + " is alread exist!!");
+					}else if(response == "DuplicateNickName"){
+						showModalDialog( userNick + " is alread exist!!");
+					}else if(response == "Duplicate"){
+						showModalDialog( userEmail + ", "+userNick + " is alread exist!!");
+					}else{
+						showErrorModal("Unknown response from server");
+					}
+				}).fail(function(){
+					showErrorModal("Could not connect to the server");
+				});
+				return false;
+			}
+		
+		function showModalDialog(title,message){
+				$("#modalTitle").text(title);
+				$("#modalBody").text(message);
+				$("#modalDialog").modal();
+			}
+			
+			function showErrorModal(message){
+				showModalDialog("Error!!",message);
+			}
+			
+			function showErrorModal(message){
+				showModalDialog("Warning! ",message);
+			}
+			
+	</script>
+
+	<div th:replace="navigation :: menu"></div>
+	<br><br><br>
+	<div class="container">		
+		<div class="form-group">
+			<div class="container">
+				<form th:action="@{/users/edit}" th:object="${user}" method="post"
+					enctype="multipart/form-data"
+					style="max-width: 600px; margin: 0 auto;" onsubmit="return checkUniqueNick(this)">
+					
+					<input type="hidden" th:field="*{id}">
+					<input sec:authorize="isAuthenticated()" type="hidden" th:field="*{role}">
+					<input sec:authorize="isAuthenticated()" type="hidden" th:field="*{point}">
+					<!--<input sec:authorize="isAuthenticated()" type="hidden" th:field="*{likes}">-->
+					<input sec:authorize="isAuthenticated()" type="hidden" th:field="*{enabled}">
+						
+					<div class="border border-warning rounded p-4">
+						<div>
+						  <br>
+						  <h3>[[${usermessage}]]</h3>
+						</div>
+						<div sec:authorize="isAnonymous()" class="form group row">
+							<label class="col-4 col-form-label">email</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" th:field="*{email}">
+							</div>
+						</div>
+						<input sec:authorize="isAuthenticated()" type="hidden" th:field="*{email}">
+						<br/>
+						
+						<div sec:authorize="isAnonymous()" class="form group row">
+							<label class="col-4 col-form-label">name</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" th:field="*{name}">
+							</div>
+						</div>
+						<input sec:authorize="isAuthenticated()" type="hidden" th:field="*{name}">
+						<br/>
+						
+						<div class="form group row">
+							<label class="col-4 col-form-label">Address</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" th:field="*{address}">
+							</div>
+						</div>
+						<br/>
+						
+						<div class="form group row">
+							<label class="col-4 col-form-label">NickName</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" th:field="*{nickName}">
+							</div>
+						</div>
+						<br/>
+						
+						<div class="form group row">
+							<label class="col-4 col-form-label">Password</label>
+							<div class="col-sm-8">
+								<input th:if="${user.id == null}" type="password" class="form-control"th:field="*{password}" required minlength="1" maxlength="20">
+					            <input th:if="${user.id != null}" type="password" class="form-control"th:field="*{password}"> 
+							</div>
+						</div>
+						<br/>
+						
+						<div class="form group row">
+							<label class="col-4 col-form-label">Phone</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" th:field="*{phone}">
+							</div>
+						</div>
+						<br/>
+						
+						<div class="text-center">
+		                    <input sec:authorize="isAnonymous()" type="submit" value="회원가입" class="btn btn-warning m-3"/>
+		                    <input sec:authorize="isAuthenticated()" type="submit" value="변경" class="btn btn-warning m-3"/>
+		                    <input type="button" value="Cancel" class="btn btn-secondary" id="historyBackBtn"/>
+		                 </div>	
+					
+					</div>					
+				</form>
+				<div class="modal fade text-center" id="modalDialog">
+				  <div class="modal-dialog">
+					  <div class="modal-content">
+						  <div class="modal-header">
+							  <h4 class="modal-title" id="modalTitle">Warning</h4>
+							  <button type="button" class="close" data-dismiss="modal">&times;</button>
+						  </div>
+						  
+						  <div class="modal-body">
+							  <span id="modalBody"></span>
+						  </div>
+						  
+						  <div class="modal=footer">
+							  <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+						  </div>
+					  </div>
+				  </div>
+			  </div>
+			</div>	
+		</div>
+	</div>
+</body>

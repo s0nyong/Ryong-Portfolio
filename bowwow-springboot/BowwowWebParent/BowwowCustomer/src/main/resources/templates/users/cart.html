@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+ xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+ 
+<head th:replace="fragments :: page_head('Home - cart')">
+
+</head>	
+<body>
+
+	<div th:replace="navigation :: menu"></div>
+	
+	<div class="container">
+		<div th:if="${cartList.isEmpty()}" >
+			<br>
+			<h1 style="color: #bf6e22; text-align: center;">장바구니가 비어있습니다</h1><br>
+		</div>
+		<div th:unless="${cartList.isEmpty()}" >
+			<br>
+			<h1 style="color: #bf6e22; text-align: center;">장바구니</h1><br>
+			<form method="get" >
+				<table class="table" >
+					<thead style="background-color: #fbdc6f; color: rgb(128, 64, 0);">
+						<tr>
+							<th>No</th>
+							<th>사진</th>
+							<th>제품명</th>
+							<th>수량</th>
+							<th>가격</th>
+							<th>선택</th>
+						</tr>
+					</thead>
+					
+					<tbody >
+						
+						<tr th:each="cartlist:${cartList}">
+							<td th:text="${cartlistStat.count}"></td>
+							<td><a th:href="@{'/product/detail/' + ${cartlist.product.id} + '/1'}"><img th:src="@{${cartlist.product.mainImagePath}}" style="width:100px" class="img-fluid"/></a></td>
+							<td>[[${cartlist.product.mainName}]] [[${cartlist.product.subName}]]</td>
+							<td>[[${cartlist.count}]]</td>
+							<td>[[${cartlist.product.price}]] 원</td>
+							<td><input name="selectdItem" th:value="${cartlist.id}" type="checkbox"/></td>		
+						</tr>
+												
+					</tbody>	
+				</table>
+				<br>
+				<div style="text-align: center;">
+					<button type="submit" th:formaction="@{/cart/delete}" class="btn btn-secondary">선택삭제</button>
+					<button type="submit" th:formaction="@{/order/buynow}" class="btn btn-warning m-3">선택구매</button>
+				</div>
+			</form>		
+		</div>
+		
+	</div>
+	
+	
+  	<div th:replace="fragments :: footer"></div>
+
+
+</body>      
+</html>

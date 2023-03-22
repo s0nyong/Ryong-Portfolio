@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.thymeleaf.org">
+	
+<head th:replace="fragments :: page_head('DetailPro - Bowwow')"/>
+
+<body>
+	
+	<div class="container justify-content-center">
+		<div th:replace="navigation :: menu"></div>
+		
+		<div class="container">
+			<div style="border:solid rgb(222, 222, 222); padding: 30px; border-radius: 5px;">
+				<div style="width: 95%; padding-left: 30px;">
+					<div style="font-size:13px; color:darkgray;">
+						<b>글 번호 </b>[[${notice.id}]]
+					</div><br>
+					
+					<div style="float:right; color:darkgray;" >
+						[[${notice.date}]]
+					</div>
+					<div style="font-size:20px;">
+						<b style="padding-right: 30px; ">[[${notice.title}]]</b>
+					</div>			
+				</div>
+				<hr>
+				<div>
+					<div style=" font-size:20px; height: 100%; padding: 10px 30px 10px 30px;">
+						<pre style=" font-family: Arial">[[${notice.comment}]]</pre>
+					</div>
+				</div>
+				<hr>
+				<div class="text-center">
+	        		<a th:href="@{/notice}"><button class="btn btn-secondary" id="historyBackBtn">목록으로</button></a>
+	     		</div>	
+			</div>	
+		</div>
+		<div th:replace="fragments :: footer"></div>
+	</div>
+	
+	
+
+</body>
+
+</html>

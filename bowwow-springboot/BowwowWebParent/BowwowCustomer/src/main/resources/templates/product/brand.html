@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns="http://www.thymeleaf.org">
+	
+<head th:replace="fragments :: page_head('Products - Bowwow')"/>
+
+    <style>
+        .product-list {
+            margin: 0 auto;
+            width: 80%;
+            text-align: center;
+        }
+        .product-list li {
+            display: inline-block;
+            width: 15%;
+            margin: 0 2%;
+        }
+    </style>
+
+<body>
+	
+	<div class="recent-products-container" th:if="${recentProducts != null}" style="position: fixed;">
+		<h3 style="color: darkgray;">최근본 상품</h3>
+		<th:block th:each="recentProducts:${recentProducts}">
+			<a class="text-dark" th:href="@{'/product/detail/' + ${recentProducts.id} + '/1'}" aria-disabled="false">
+				<div style="text-align: center;">
+					<img th:src="@{${recentProducts.mainImagePath}}" style="width:120px"/>
+					
+				</div>
+			</a>
+		</th:block>
+	</div>
+	
+	<div th:replace="navigation :: menu"></div>
+	
+	<div class="container">
+	   <form th:action="@{/product/brand}" class="form-inline m-3">
+   			<div style="float:right;">
+	   			<input type="search" name="keyword" th:value="${keyword}" class="form-control" required/>
+	   			&nbsp;&nbsp;
+	   			<button type="submit" class="btn btn-warning">
+					   <i class="fas fa-search"></i>
+				</button>
+				&nbsp;&nbsp;
+				<button type="button" class="btn btn-secondary" onclick="clearFilter()">
+					   <i class="fas fa-eraser"></i>
+				</button>
+			</div>
+      	</form>
+   
+	
+	    <ul class="product-list">
+	    <li th:each="list : ${listbrand}">
+	        <a th:href="@{'/product/brand/' + ${list.brand} + '/1'}" th:text="${list.brand}" style="color: #bf6e22;"></a>
+	    </li>
+		</ul>
+    </div>
+    <hr >
+    <div th:replace="fragments :: footer"></div>
+    
+<script type="text/javascript">
+	function clearFilter(){
+			window.location = "[[@{/product/brand}]]";
+		}
+</script>
+</body>
+</html>
+

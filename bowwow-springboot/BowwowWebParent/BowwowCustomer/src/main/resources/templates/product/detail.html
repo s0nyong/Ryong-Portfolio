@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html xmlns="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: page_head('DetailPro - Bowwow')" />
+
+<body>
+
+	<div class="recent-products-container" th:if="${recentProducts != null}" style="position: fixed;">
+		<h3 style="color: darkgray;">최근본 상품</h3>
+		<th:block th:each="recentProducts:${recentProducts}">
+			<a class="text-dark" th:href="@{'/product/detail/' + ${recentProducts.id} + '/1'}" aria-disabled="false">
+				<div style="text-align: center;">
+					<img th:src="@{${recentProducts.mainImagePath}}" style="width:120px" />
+
+				</div>
+			</a>
+		</th:block>
+	</div>
+
+	<div class="container justify-content-center buysuccess">
+
+		<div th:replace="navigation :: menu"></div><br><br>
+
+		<div class="full-details">
+
+			<div class="border border-light">
+				<div class="flex">
+					<div class="image-box">
+						<img th:src="@{${product.mainImagePath}}" style="margin:0 35% 0 35%; width: 80%; height: 80%;">
+					</div>
+					<div class="info-area">
+						<br><span>브랜드 : [[${product.brand}]]</span><br>
+						<div>
+							<h4><strong>제품명 : [[${product.mainName}]][[${product.subName}]]</strong></h4>
+						</div>
+						<p>평점 : <i class="fa-solid fa-star" style="color: #ffd70f;"></i>[[${scorePercent}]]점</p>
+						<p>재고 : [[${product.stock}]]개</p>
+						<p th:if="${discountPercent != 0}">할인 : [[${discountPercent}]]%</p>
+						<p>가격 : [[${product.price}]]원</p>
+
+						<select th:if="${productMainName.size() >= 2 }" onchange="location = this.value;">
+							<option>옵션</option>
+							<div th:each="productMainName:${productMainName}">
+								<option th:value="@{'/product/detail/' + ${productMainName.id} + '/1'}"
+									th:text="${productMainName.subName}"></option>
+							</div>
+						</select>
+						<br>
+
+						<div><br>
+						
+							<form method="get" id="addCartForm">
+								<div id="quantity-div">
+									<p>수량</p>
+									<button class="myBtn" id="myMinusBtn">-</button>
+									<input id="myInput" type="text" name="quantity" min="1" th:max="${product.stock}"
+										value="1" style="border: none; text-align: center; width: 10%;" />
+									<button class="myBtn" id="myPlusBtn">+</button>
+									<span id="totalPriceSpan"> <b id="total-price">[[${product.price}]]</b>원</span>
+								</div>
+								<input type="hidden" id="productId" name="productId" th:value="${product.id}">
+								<br><br>
+								<div style="display: flex; justify-content :space-between; width: 398PX; text-align: center;">
+								<button type="submit" class="btn btn-danger" style="padding: 5px 15px;"
+									th:formaction="@{/cart/add}"
+									th:onclick="'return checkDupCart(event, this.form)'">장바구니담기</button>
+								<button type="submit" class="btn btn-danger" style="padding: 5px 25px;"
+									th:formaction="@{/order/buynow}">구매하기</button>
+								<div sec:authorize="isAuthenticated()" style="margin: 16px 25px 0 80px">
+									<p th:each="userlikes:${userLikes}" th:id="|like${product.id}|"
+										th:if="${userlikes == product.id}" class="fa-solid fa-heart icon-red"
+										th:onclick="|dislike(${product.id})|">찜콩</p>
+									<p th:each="userUnLikes:${userUnLikes}" th:id="|like${product.id}|"
+										th:if="${userUnLikes == product.id}" class="fa-regular fa-heart icon-red"
+										th:onclick="|like(${product.id})|">찜콩</p>
+								</div>
+								<div sec:authorize="isAnonymous()" style="margin: 16px 25px 0 80px">
+									<p class="fa-regular fa-heart icon-red" th:onclick="|like(${product.id})|">찜콩</p>
+								</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<br><br>
+			<hr>
+
+			<div class="subimg">
+				<h3>상품 설명</h3>
+				<p style="font-family: sans-serif; font-size: 18px;">[[${product.description}]]</p>
+				<div class="image-container">
+					<img class="subimg1" th:src="@{${product.descImagePath}}" sizes="auto" />
+					<button class="toggle-button" onclick="toggleImage()">상품 상세 더보기</button>
+					<button class="collapse-button" onclick="collapseImage()">상품 상세 접기</button>
+				</div>
+			</div>
+		</div>
+
+		<br><br><br>
+		<hr>
+
+		<div>
+			<h3>상품 문의
+				<div class="d-flex justify-content-end">
+					<input type="hidden" id="productId" name="productId" th:value="${product.id}">
+					<a th:href="@{'/inquiry/list/' + ${product.id} + '/1'}" class="btn btn-secondary">더보기</a>
+				</div>
+			</h3>
+
+		</div>
+		<div class="container">
+			<div class="form-group">
+				<div class="d-flex justify-content-center form group row">
+					<div th:if="${parentInquiries.empty}"
+						class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-center align-items-center row">
+						<h3>등록된 문의가 없습니다.</h3>
+					</div><br>
+					<div id="inquiry" th:each="parentInquiry: ${parentInquiries}"
+						class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-center align-items-center row">
+
+						<button class="accordion">
+							닉네임 : [[${parentInquiry.user.nickName}]]
+							&nbsp;&nbsp;&nbsp;[[${#temporals.format(parentInquiry.regDate, 'yyyy-MM-dd HH:mm')}]]<br>
+							<div class="com">
+								질문내용: [[${parentInquiry.comment}]]
+							</div>
+						</button>
+						<div class="panel">
+							<div id="inquirydetail">
+								<br>
+								<div class="row d-flex justify-content-left">
+									<div>
+										<p>[[${parentInquiry.comment}]]</p>
+										<br>
+										<p th:each="childInquiry: ${parentInquiry.children}">[[${childInquiry.comment}]]
+										</p>
+										<p th:if="${parentInquiry.children.empty}" style="color: red;">답변 준비중입니다.</p>
+									</div>
+								</div>
+								<br>
+								<div th:if="${parentInquiry != null and user != null and parentInquiry.user.email == user.email}"
+									class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-center align-items-center row">
+									<form method="post" th:action="@{/inquiry/edit}">
+										<input type="hidden" name="id" th:value="${parentInquiry.id}">
+										<textarea class="form-control" name="comment" cols="90" rows="5"></textarea>
+										<input type="hidden" name="pageNum" th:value="${currentPage}">
+										<div class="d-flex justify-content-end">
+											<button type="submit" name="cancel"
+												class="btn btn-outline-secondary">문의수정</button>
+											&nbsp;&nbsp;&nbsp;
+											<button type="submit" th:formaction="@{/inquiry/delete}" name="confirm"
+												class="btn btn-outline-secondary">문의삭제</button>
+										</div>
+									</form>
+								</div>
+								<hr>
+							</div>
+						</div>
+					</div>
+				</div>
+				<br>
+				<div class="border border-warning rounded p-4">
+					<div class="form group row d-flex justify-content-center">
+						<div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-center align-items-center row">
+							<form th:action="@{/inquiry/add}" th:object="${inquiry}" method="POST">
+								<input type="hidden" name="id" th:value="${product.id}" />
+								<input type="hidden" name="pageNum" th:value="${currentPage}">
+								<textarea class="form-control" th:field="*{comment}" cols="90" rows="5"></textarea>
+								<div class="d-flex justify-content-end">
+									<button type="submit" class="btn btn-outline-secondary">문의하기</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<br><br><br>
+		<hr>
+
+		<h3>구매 후기</h3>
+		<div class="container-fluid" th:if="${countReview != 0}">
+			<h3 class="text-center" th:text="${countReview} + ' 개의 후기'"></h3>
+		</div>
+		<div class="container-fluid" th:if="${countReview == 0}">
+			<h3 class="text-center">등록된 후기가 없습니다.</h3>
+		</div>
+
+		<div>
+			<section class="review-main">
+				<div class="full-boxer" th:each="review : ${listreview}">
+					<div class="comment-box">
+						<div class="box-top">
+							<div class="Profile">
+								<div class="profile-image">
+									<img th:src="@{/images/review.png}">
+								</div>
+								<div class="Name">
+									<span>[[${#temporals.format(review.regDate, 'yyyy-MM-dd HH:mm')}]] </span>
+									<span>@[[${review.user.nickName}]]</span>
+									<p th:if="${review.score == 5.0}" id="startest">★★★★★</p>
+									<p th:if="${review.score == 4.0}" id="startest">★★★★</p>
+									<p th:if="${review.score == 3.0}" id="startest">★★★</p>
+									<p th:if="${review.score == 2.0}" id="startest">★★</p>
+									<p th:if="${review.score == 1.0}" id="startest">★</p>
+								</div>
+							</div>
+						</div>
+						<div class="comment">
+							<p>[[${review.comment}]]</p>
+						</div>
+
+						<div th:if="${review != null and user != null and review.user.email == user.email}">
+							<form th:action="@{/product/reviewedit}" th:object="${review}" method="POST">
+								<input type="hidden" name="pageNum" th:value="${currentPage}">
+								<input type="hidden" name="id" th:value="${review.id}">
+
+								<div class="star-rating">
+									<input type="radio" th:id="'5-stars'+ ${review.id}" name="score" value="5.0" />
+									<label th:for="'5-stars'+ ${review.id}" class="star">&#9733;</label>
+									<input type="radio" th:id="'4-stars'+ ${review.id}" name="score" value="4.0" />
+									<label th:for="'4-stars'+ ${review.id}" class="star">&#9733;</label>
+									<input type="radio" th:id="'3-stars'+ ${review.id}" name="score" value="3.0" />
+									<label th:for="'3-stars'+ ${review.id}" class="star">&#9733;</label>
+									<input type="radio" th:id="'2-stars'+ ${review.id}" name="score" value="2.0" />
+									<label th:for="'2-stars'+ ${review.id}" class="star">&#9733;</label>
+									<input type="radio" th:id="'1-stars'+ ${review.id}" name="score" value="1.0" />
+									<label th:for="'1-stars'+ ${review.id}" class="star">&#9733;</label>
+								</div>
+								<input type="text" name="comment" placeholder="수정하실 내용을 작성해주세요!">
+								<input type="hidden" name="pageNum" th:value="${currentPage}">
+								<button type="submit" name="confirm" class="btn btn-outline-secondary"
+									style="width:30%;">수정</button>
+								&nbsp;&nbsp;&nbsp;
+								<button type="submit" th:formaction="@{/product/reviewdelete}" name="confirm"
+									class="btn btn-outline-secondary" style="width:30%;">삭제</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+
+		<div class="border border-warning rounded p-4" th:if="${checkBuyer == 'OK'}">
+			<form th:action="@{/product/reviewadd}" th:object="${review}" method="POST">
+				<label>별점을 선택해주세요</label>
+				<div class="star-rating">
+					<input type="radio" th:id="'5-stars'+ ${review.id}" name="score" value="5.0" />
+					<label th:for="'5-stars'+ ${review.id}" class="star">&#9733;</label>
+					<input type="radio" th:id="'4-stars'+ ${review.id}" name="score" value="4.0" />
+					<label th:for="'4-stars'+ ${review.id}" class="star">&#9733;</label>
+					<input type="radio" th:id="'3-stars'+ ${review.id}" name="score" value="3.0" />
+					<label th:for="'3-stars'+ ${review.id}" class="star">&#9733;</label>
+					<input type="radio" th:id="'2-stars'+ ${review.id}" name="score" value="2.0" />
+					<label th:for="'2-stars'+ ${review.id}" class="star">&#9733;</label>
+					<input type="radio" th:id="'1-stars'+ ${review.id}" name="score" value="1.0" required />
+					<label th:for="'1-stars'+ ${review.id}" class="star">&#9733;</label>
+				</div>
+				<input type="text" maxlength='100' placeholder="평점은 최대 100자까지 등록 가능합니다." id="comment"
+					class="form-control" th:field="*{comment}">
+				<input type="hidden" name="id" th:value="${product.id}">
+				<input type="hidden" name="pageNum" th:value="${currentPage}">
+				<button type="submit" class="btn btn-warning">등록</button>
+			</form>
+		</div>
+	</div>
+
+	<br>
+	<hr><br><br>
+	<div th:if="${totalPages > 1}">
+		<nav>
+			<ul class="pagination justify-content-center">
+				<li th:class="${currentPage == 1 ? 'page-item disabled' : 'page-item'}">
+					<a class="page-link" th:href="@{'/product/detail/' +${id} + '/1'}">First</a>
+				</li>
+				<li th:class="${currentPage > 1 ? 'page-item' : 'page-item disabled'}">
+					<a class="page-link" th:href="@{'/product/detail/' + ${id} + '/'+${currentPage - 1}}">Previous</a>
+				</li>
+				<li th:class="${i == currentPage ? 'page-item active' : 'page-item'}"
+					th:each="i:${#numbers.sequence(1,totalPages)}">
+					<a class="page-link" th:href="@{'/product/detail/'+ ${id} + '/'+ ${i}}">[[${i}]]</a>
+				</li>
+				<li th:class="${currentPage < totalPages ? 'page-item active' : 'page-item disabled'}">
+					<a class="page-link" th:href="@{'/product/detail/'+ ${id} +'/'+ ${currentPage + 1}}">Next</a>
+				</li>
+				<li th:class="${currentPage == totalPages ? 'page-item disabled' : 'page-item'}">
+					<a class="page-link" th:href="@{'/product/detail/' + ${id} + '/'+ ${totalPages}}">Last</a>
+				</li>
+			</ul>
+		</nav>
+	</div>
+	<br><br>
+
+	<div class="modal fade text-center" id="modalDialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="modalTitle">Warning</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<div class="modal-body">
+					<span id="modalBody"></span>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" id="goCartBtn" class="btn btn-primary" data-dismiss="modal"
+						th:onclick="'return goCartPage()'">장바구니로 이동</button>
+					<button type="button" class="btn btn-danger" data-dismiss="modal">닫기</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade text-center" id="modalDialog2">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="modalTitle2">Warning</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<div class="modal-body">
+					<span id="modalBody2"></span>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-dismiss="modal">나중에</button>
+					<button type="button" class="btn btn-danger" data-dismiss="modal" onclick="login()">확인</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div th:replace="fragments :: footer"></div>
+	<br><br>
+
+	</div>
+
+	</div>
+
+	</div>
+
+	<script>
+		function goCartPage() {
+			window.location.href = "[[@{/cart}]]"
+		}
+
+		function checkDupCart(event, form) {
+			url = "[[@{/cart/checkDup}]]";
+			proId = $("#productId").val();
+			csrfValue = $("input[name='_csrf']").val();
+
+			params = {productId: proId, _csrf: csrfValue};
+
+			$.post(url, params, function (response) {
+				if (response == "OK") {
+					form.action = "[[@{/cart/add}]]"
+					form.submit();
+				} else if (response == "Duplicated") {
+					showModalDialog("이미 장바구니에 있어요!");
+				} else if (response == "NotUser") {
+					showModalDialog2("ㅜㅜ", "로그인 하시겠습니까?")
+				} else {
+					showErrorModal("Unknown response from server");
+				}
+			}).fail(function () {
+				showErrorModal("Could not connect to the server");
+			});
+			return false;
+		}
+
+		function login() {
+			window.location = "[[@{/login}]]";
+		}
+
+		function like(id) {
+			url = "[[@{/product/likeit/}]]";
+			url += id;
+			console.log(url)
+			csrfValue = $("input[name='_csrf']").val();
+
+			params = {_csrf: csrfValue};
+			btn = $(this);
+			console.log(btn);
+			$.post(url, params, function (response) {
+				if (response == "OK") {
+					if ($('#like' + id).attr("class") == "fa-regular fa-heart icon-red") {
+						$('#like' + id).attr("class", "fa-solid fa-heart icon-red");
+						$('#like' + id).attr("onclick", "dislike(" + id + ")");
+					}
+
+				} else if (response == "NotUser") {
+					showModalDialog2("ㅜㅜ", "로그인 하시겠습니까?")
+				}
+			}).fail(function () {
+				showModalDialog2("Error", "Could not connect to the server");
+			});
+			return false;
+		}
+
+		function dislike(id) {
+			url = "[[@{/product/dislike/}]]";
+			url += id;
+			console.log(url)
+			csrfValue = $("input[name='_csrf']").val();
+
+			params = {_csrf: csrfValue};
+			btn = $(this);
+			console.log(btn);
+			$.post(url, params, function (response) {
+				if (response == "OK") {
+					if ($('#like' + id).attr("class") == "fa-solid fa-heart icon-red") {
+						$('#like' + id).attr("onclick", "like(" + id + ")");
+						$('#like' + id).attr("class", "fa-regular fa-heart icon-red");
+					}
+				} else if (response == "NotUser") {
+					showModalDialog2("ㅜㅜ", "로그인 하시겠습니까?")
+				}
+			}).fail(function () {
+				showModalDialog2("Error", "Could not connect to the server");
+			});
+			return false;
+		}
+
+
+		function showModalDialog(title, message) {
+			$("#modalTitle").text(title);
+			$("#modalBody").text(message);
+			$("#modalDialog").modal();
+		}
+
+		function showModalDialog2(title, message) {
+			$("#modalTitle2").text(title);
+			$("#modalBody2").text(message);
+			$("#modalDialog2").modal();
+		}
+
+		function showErrorModal(message) {
+			showModalDialog("Error!!", message);
+		}
+
+		var acc = document.getElementsByClassName("accordion");
+		var i;
+
+		for (i = 0; i < acc.length; i++) {
+			acc[i].addEventListener("click", function () {
+				this.classList.toggle("active1");
+				var panel = this.nextElementSibling;
+				if (panel.style.maxHeight) {
+					panel.style.maxHeight = null;
+				} else {
+					panel.style.maxHeight = panel.scrollHeight + "px";
+				}
+			});
+		}
+
+
+		function toggleImage() {
+			var imageContainer = document.querySelector('.image-container');
+			var toggleButton = document.querySelector('.toggle-button');
+			var collapseButton = document.querySelector('.collapse-button');
+
+			imageContainer.classList.toggle('expanded');
+
+			if (toggleButton.classList.contains('active')) {
+				toggleButton.classList.remove('active');
+				toggleButton.innerHTML = '상품 상세 더보기';
+				collapseButton.classList.add('active');
+			} else {
+				toggleButton.classList.add('active');
+				toggleButton.innerHTML = '상품 상세 접기';
+				collapseButton.classList.remove('active');
+			}
+		}
+
+		function collapseImage() {
+			var imageContainer = document.querySelector('.image-container');
+			var toggleButton = document.querySelector('.toggle-button');
+			var collapseButton = document.querySelector('.collapse-button');
+
+			imageContainer.classList.remove('expanded');
+			collapseButton.classList.remove('active');
+			collapseButton.innerHTML = '상품 상세 더보기';
+			toggleButton.classList.add('active');
+			toggleButton.innerHTML = '상품 상세 더보기';
+		}
+		
+		$(document).ready(function () {
+
+		max = Number("[[${product.stock}]]");
+		min = 1;
+		price = Number("[[${product.price}]]");
+		prev = 1;
+		$('#myPlusBtn').click(function (event) {
+			event.preventDefault();
+			present = Number($('#myInput').val());
+
+			if (present >= max) {
+
+				return;
+			}
+			$('#myInput').val(present + 1);
+			$('#total-price').text((present+1)*price)
+			prev=present + 1;
+		})
+
+		$('#myMinusBtn').click(function (event) {
+			event.preventDefault();
+			present = Number($('#myInput').val());
+
+			if (present <= min) {
+
+				return;
+			}
+			$('#myInput').val(present - 1);
+			
+			$('#total-price').text((present-1)*price)
+			prev=present - 1;
+		})
+
+		$('#myInput').on('input', function () {
+			const input = $(this).val();
+			if(input=="") {
+				$('#total-price').text(0)
+				return;
+			}
+			if (!($.isNumeric(input) && parseInt(input) >= 1)) {
+				$(this).val(1);
+				
+			}else if(max<input){
+
+				$('#total-price').text(Number(prev)*price);
+
+				$('#myInput').val(Number(prev));
+			}else{
+				
+				$('#total-price').text(Number(input)*price);
+				prev = input
+			}
+		});
+	})
+		
+	</script>
+
+<style>
+	select {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	border-radius: 10px;
+	width: 70%; 
+	height: 58px; 
+	padding: 5px 25px;  
+	flex-basis: 200px;
+	}
+
+	select::-ms-expand {
+		display: none;
+	}
+
+	select {
+		background:url('[[@{/images/f.png}]]') no-repeat 97% 50%/15px auto;
+	}
+</style>
+
+</body>
+
+</html>

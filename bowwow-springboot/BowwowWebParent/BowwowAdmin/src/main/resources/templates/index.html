@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+ xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+ 
+<head th:replace="fragments :: page_head('Home - Shope Admin')">
+
+</head>	
+<body>
+
+	<div th:replace="navigation :: menu"></div>
+	
+	 <div style="text-align: center;">		 
+	      <p style="color: #bf6e22; font-size:40px">관리자 페이지 입니다</p>	  
+      </div>
+	<div><img th:src="@{/images/dogwithdoll.png}" style="margin:0 35% 0 35%; width: 30%; height: 30%;"/> </div>
+	
+	
+  	<div th:replace="fragments :: footer"></div>
+
+</body>      
+</html>

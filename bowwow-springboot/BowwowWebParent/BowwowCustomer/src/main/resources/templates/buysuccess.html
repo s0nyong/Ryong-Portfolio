@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+ xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+ 
+<head th:replace="fragments :: page_head('Home - Bowwow')">
+
+</head>	
+<body>
+
+	<div th:replace="navigation :: menu"></div>
+	
+	<div class="container justify-content-center buysuccess" style="text-align: center;">
+		<br><br>
+		<h2 style="font-family: 'Gaegu', cursive; font-size: 45px; color: #bf6e22;">구매완료!</h2> <br>
+		<img th:src="@{/images/merci.png}" style="margin:0 35% 2% 35%; width: 20%; height: 20%;"/> 
+		<h4 style="font-family: 'Gaegu', cursive; font-size: 40px; color: #bf6e22;">주인님, 감사합니다.</h4> <br>
+		<div>
+			<form method="get">
+				<input type="submit" th:formaction="@{/}" value="홈으로" class="btn btn-outline-secondary"> &nbsp;
+				<input type="submit" th:formaction="@{/order/orderlist}" value="구매내역보기" class="btn btn-secondary">
+			</form>
+		</div>
+		<br>
+	</div>
+	
+	
+  	<div th:replace="fragments :: footer"></div>
+
+</body>      
+</html>
