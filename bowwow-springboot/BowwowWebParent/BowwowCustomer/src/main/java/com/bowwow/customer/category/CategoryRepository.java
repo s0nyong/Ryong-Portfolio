@@ -8,7 +8,7 @@ import com.bowwow.common.entity.Category;
 
 public interface CategoryRepository extends CrudRepository<Category, Integer> {
 
-	// 부모 카테고리가 null인 카테고리 목록 조회
+	// Spring Data JPA에서 자동으로 생성되는 쿼리 메서드
 	public List<Category> findCategoriesByParentIsNull();
 
 }

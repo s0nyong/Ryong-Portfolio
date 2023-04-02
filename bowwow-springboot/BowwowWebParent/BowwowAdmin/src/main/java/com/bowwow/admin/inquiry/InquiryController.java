@@ -35,12 +35,15 @@ public class InquiryController {
 	private ProductService proService;
 	
 	//============================================전체문의글 볼 때 ↓ all 페이지==========================================
+	
+	//문의 전체 불러오기
 	@GetMapping("/inquiry")
 	public String listProduct(Model model) {
 
 		return listInquiry(model, 1, null);
 	}
 	
+	//문의 전체 페이지로 불러오기
 	@GetMapping("/inquiry/{pageNum}")
 	public String listInquiry(Model model, @PathVariable(name = "pageNum") int pageNum,
 			@RequestParam(name="keyword",required=false)String keyword) {
@@ -54,10 +57,11 @@ public class InquiryController {
 		
 		model.addAttribute("keyword", keyword);
 		
-		model.addAttribute("type","all");
+		model.addAttribute("type","all");	//전체 페이지로 돌아가기 위해 필요
 		return "inquiry/inquiry";
 	}
 	
+	//문의 답변하기 
 	@PostMapping("/inquiry/answer")
 	public String answerComment(@RequestParam("id")int parentId, 
 								@RequestParam("comment")String comment,
@@ -71,14 +75,15 @@ public class InquiryController {
 		Inquiry theInquiry = new Inquiry(product,user,comment,inquiry);
 		inService.save(theInquiry);
 		
-		if(type.equals("all")) {
+		if(type.equals("all")) {	//type이 all을 갖고 있으면 전체페이지로 
 			return "redirect:/inquiry";	
-		}else {
+		}else {						//type이 all이 아닌 것을 갖고 있으면 새로운 글만 뽑아오는 페이지로 이동
 			return "redirect:/inquiry/new";
 		}
 			
 	}
 	
+	//답변 수정하기
 	@PostMapping("/inquiry/edit")
 	public String answerEdit(@RequestParam("childId")int childId, 
 							 @RequestParam("commentedit")String commentedit) throws ProductNotFoundException {	
@@ -89,6 +94,7 @@ public class InquiryController {
 		return "redirect:/inquiry";
 	}
 	
+	//답변 삭제하기
 	@PostMapping("/inquiry/delete")
 	public String answerDelete(@RequestParam("childId")int childId) {
 		
@@ -99,12 +105,14 @@ public class InquiryController {
 	
 	//==============================새로운 문의글만 볼 때 ↓ new 페이지==================================================
 	
+	//답변이 없는 새로운 문의글만 불러오기
 	@GetMapping("/inquiry/new")
 	public String listNewProduct(Model model) {
 
 		return listNewInquiry(model, 1);
 	}
 	
+	// 답변이 없는 새로운 문의글 페이지로 불러오기
 	@GetMapping("/inquiry/new/{pageNum}")
 	public String listNewInquiry(Model model, @PathVariable(name = "pageNum") int pageNum) {
 				
@@ -115,7 +123,7 @@ public class InquiryController {
 		List<Inquiry> listInquiry = page.getContent();
 		model.addAttribute("listInquiry",listInquiry);
 		
-		model.addAttribute("type","new");
+		model.addAttribute("type","new");	//새로운 글만 뽑아오는 페이지로 이동하기 위해 필요
 		
 		return "inquiry/inquiry-new";
 	}

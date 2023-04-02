@@ -66,7 +66,7 @@ public class UserController {
 	
 	@GetMapping("/likeit/list")
 	public String likeItList(Model model,Principal p) {
-		if(p ==null) {
+		if(p ==null) {	// p가 null 이면 list에 아무것도 안뽑힘
 			model.addAttribute("list",null);
 		}else {
 			User theUser = userService.findByEmail(p.getName());
@@ -76,7 +76,7 @@ public class UserController {
 			List<Product> userLikes = new ArrayList<>();
 			for(int i=0; i<listLikes.size(); i++) {
 				Product product = listLikes.get(i);
-				if(product.getLikes().contains(theUser)) {
+				if(product.getLikes().contains(theUser)) {//Like에 theUser가 담겨 있으면 실행
 					float discount = product.getDiscount();
 					int discountPercent = (int) Math.round(discount * 100);
 					float score = product.getScore();

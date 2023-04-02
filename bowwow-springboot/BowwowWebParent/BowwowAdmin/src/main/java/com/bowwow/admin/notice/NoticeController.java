@@ -24,8 +24,6 @@ public class NoticeController {
 	
 	@GetMapping("/notice")
 	public String listNotice(Model model) {
-//		List<Notice> listnotice = noticeService.listAll();
-//		model.addAttribute("listnotice", listnotice);
 		return listByPage(model, 1, null);
 	}
 	

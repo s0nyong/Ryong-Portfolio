@@ -8,11 +8,17 @@
 <body>
 	<div class="container justify-content-center">
 		<div th:replace="navigation :: menu"></div>
-		
+		<div th:if="${list.isEmpty()}" >
+			<br>
+			<h1 style="color: #bf6e22; text-align: center;">찜목록이 비어있습니다</h1><br>
+		</div>
+		<th:block th:unless="${list.isEmpty()}">
 		<div>
 			<br>
 			<h1 style="color: #bf6e22; text-align: center;">[[${pageTitle}]]</h1><br>
 		</div>
+		
+		
 		
 		<div class="full-details">
 		   <table class="table">
@@ -48,6 +54,7 @@
 		        </tbody>      
 		   </table>
 	   </div>
+	   </th:block>
   	</div>
    <div th:replace="fragments :: footer"></div>
 </body>

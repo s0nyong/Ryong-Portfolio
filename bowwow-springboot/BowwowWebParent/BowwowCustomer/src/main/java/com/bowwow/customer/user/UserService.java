@@ -116,7 +116,7 @@ public class UserService {
 	}
 
 	public void kakaoLogin(String code) {
-		RestTemplate rt = new RestTemplate();
+RestTemplate rt = new RestTemplate();
 		
 		//HttpHeader 오브젝트 생성
 		HttpHeaders headers = new HttpHeaders();

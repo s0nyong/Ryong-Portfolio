@@ -41,7 +41,7 @@ public class OrderController {
 	@Autowired
 	private CartService cartService;
 	
-	// 구매 상품 정보 불러오기
+//---구매 상품 정보 불러오기---------------------------------------------------------------------------	
 	@GetMapping("/order/buynow")
 	public String buynow(@RequestParam(name="productId", required=false) Integer productId, @RequestParam(name="selectdItem", required=false) ArrayList<Integer> theCartId,
 			@RequestParam(name="quantity", required=false) Integer quantity, Model model, Authentication auth, @ModelAttribute("user") User user) {
@@ -122,12 +122,11 @@ public class OrderController {
 		return pointRate;
 	}
 	
-	// 구매 저장
-	@PostMapping("/order/save")
+@PostMapping("/order/save")
 	public String saveOrders(@RequestParam(name="PurchaseProId") List<Integer> productId,
 			@RequestParam(name="PurchaseProCount") List<Integer> quantity, 
 			@RequestParam(name="PurchaseCartId") List<Integer> cartId,
-			Model model, Authentication auth, @RequestParam("imp_uid") String impUid) throws Exception {
+			Model model, Authentication auth) throws Exception {
 		//로그인한 유저의 정보 가져오기
 		String userEmail = auth.getName();
 		User theUser = userService.findByEmail(userEmail);
@@ -155,16 +154,20 @@ public class OrderController {
 			cartService.deleteById(cartId);
 		}
 		
+		
 		return "buysuccess";
 	}
 	
-	// 구매 리스트 불러오기
+	
 	@GetMapping("/order/orderlist")
 	   public String orderList(Model model, Authentication auth) {
 	      
+		
 	      //로그인한 유저의 이름 가져와 보여주기
 	      String userEmail = auth.getName();
 	      User theUser = userService.findByEmail(userEmail);
+	      
+	      
 	      
 	      String userName = theUser.getName();
 	      model.addAttribute("userName", userName);
@@ -179,7 +182,6 @@ public class OrderController {
 	      return "/order/orderlist";
 	   }
 	
-	// 구매 상태 수정
 	@GetMapping("/order/updateStatus")
 	public String updateOrderStatus(@RequestParam("status") String newStatus, 
 			@RequestParam("orderDetailId") int orderDetailId,

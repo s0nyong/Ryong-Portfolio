@@ -36,23 +36,23 @@ public class MainController {
 		List<Category> categoryList= categoryService.getParentCategories();
 		model.addAttribute("parentCategories", categoryList);
 		
-		// 구매된 개수 count 기준 베스트 Top3 불러오기
+		// 구매된 개수 count 기준 베스트 Top3 가져오기 (완료)
 		List<Product> top3Products = proService.findTop3ByOrderByRank();
 		if(top3Products.size() > 3) {
 		    top3Products = top3Products.subList(0, 3);
 		}
 		model.addAttribute("bestproduct", top3Products);
 		
-		// 신상품 가장 최신 상품 3개 불러오기
+		// 신상품 가장 최신 상품 3개 불러오기 (완료)
 		List<Product> productsByDate = proService.list3ByDate();
 		model.addAttribute("recentproduct", productsByDate);
 		
-		// 할인율 높은 순 핫딜 Top3 불러오기
+		// 할인율 높은 순 핫딜 Top3 가져오기 (완료)
 		List<Product> hotdealProducts = proService.findTop3ByOrderByDiscountDesc().stream().limit(3).collect(Collectors.toList());
 		model.addAttribute("hotdealproduct", hotdealProducts);
 		
 		
-		// Like 표시
+		//Like 표시
 		if(p != null) {
 	    	List <Product> listpro = proService.listAll();
 	    	List<Integer> userLikes =  new ArrayList<>();
@@ -78,7 +78,6 @@ public class MainController {
 		return "index";
 	}
 	
-	// 로그인
 	@GetMapping("/login")
 	public String login(Model model) {
 		return "login";

@@ -35,8 +35,6 @@ public class ProductController {
 	
 	@GetMapping("/product")
 	public String listProduct(Model model) {
-//		List<Product> listproduct = proService.listAll();
-//		model.addAttribute("listProduct", listproduct);
 		return listByPage(model, 1, "mainName", "asc", null);
 	}
 	
@@ -56,19 +54,19 @@ public class ProductController {
 		
 		String reverseSortDir = sortDir.equals("asc") ? "desc" : "asc";
 		
-		model.addAttribute("currentPage", pageNum);
-	    model.addAttribute("totalPages", page.getTotalPages());
-	    model.addAttribute("startCount", startCount);
+		model.addAttribute("currentPage", pageNum);	//현재페이지
+	    model.addAttribute("totalPages", page.getTotalPages());	// 전체페이지 수
+	    model.addAttribute("startCount", startCount); 
 	    model.addAttribute("endCount", endCount);
 	    model.addAttribute("totalItems", page.getTotalElements());
 	    
-	    model.addAttribute("sortField", sortField);
-	    model.addAttribute("sortDir", sortDir);
-	    model.addAttribute("reverseSortDir", reverseSortDir);
+	    model.addAttribute("sortField", sortField);	//정렬 기준
+	    model.addAttribute("sortDir", sortDir); // 정렬방향
+	    model.addAttribute("reverseSortDir", reverseSortDir); //정렬 방향 변경
 	    
-	    model.addAttribute("keyword", keyword);
+	    model.addAttribute("keyword", keyword);	//검색어
 	    
-	    model.addAttribute("listproduct", listproduct);
+	    model.addAttribute("listproduct", listproduct);	//제품목록
 		
 		return "product/product";
 	}
@@ -79,8 +77,8 @@ public class ProductController {
 		Product listProduct = new Product();
 		listProduct.setEnabled(true);
 		
-		model.addAttribute("listCategory",listCategory);
-		model.addAttribute("product", listProduct);
+		model.addAttribute("listCategory",listCategory);	//카테고리목록
+		model.addAttribute("product", listProduct);	//제품객체
 		
 		return "product/product_new";
 	}
@@ -91,7 +89,7 @@ public class ProductController {
 	                          @RequestParam("descimage") MultipartFile descImageFile,
 	                          RedirectAttributes redirectAttributes) throws IOException {
 	    
-	    if (!mainImageFile.isEmpty()) {
+	    if (!mainImageFile.isEmpty()) {	//mainImageFile이 있을 때 
 	        // main image 업로드
 	        String mainImageFileName = StringUtils.cleanPath(mainImageFile.getOriginalFilename());
 	        pro.setMainImage(mainImageFileName);
@@ -101,14 +99,14 @@ public class ProductController {
 	        
 	        FileUploadUtil.cleanDir(uploadDir);
 	        FileUploadUtil.saveFile(uploadDir, mainImageFileName, mainImageFile);
-	    } else {
+	    } else { //mainImageFile이 없을 때 
 	        if (pro.getMainImage().isEmpty()) {
 	            pro.setMainImage(null);
 	        }
 	        proService.save(pro);
 	    }
 	    
-	    if (!descImageFile.isEmpty()) {
+	    if (!descImageFile.isEmpty()) {	//descImageFile이 있을 때 
 	        // desc image 업로드
 	        String descImageFileName = StringUtils.cleanPath(descImageFile.getOriginalFilename());
 	        pro.setDescImage(descImageFileName);
@@ -118,7 +116,7 @@ public class ProductController {
 	        
 	        FileUploadUtil.cleanDir(uploadDir);
 	        FileUploadUtil.saveFile(uploadDir, descImageFileName, descImageFile);
-	    } else {
+	    } else {	//descImageFile이 없을 때 
 	        if (pro.getDescImage().isEmpty()) {
 	            pro.setDescImage(null);
 	        }
@@ -134,11 +132,11 @@ public class ProductController {
 		Product product;
 		try {
 			product = proService.findById(id);
-			model.addAttribute("product",product);
+			model.addAttribute("product",product);	//해당 제품 가져오기
 			model.addAttribute("pageTitle","Edit product(ID: "+id+")");
 			
 			List<Category> listCategory = caService.listProductUsedInForm();
-			model.addAttribute("listCategory",listCategory);
+			model.addAttribute("listCategory",listCategory);	//카테고리 리스트 뽑아오기
 			return "product/product_new";
 		}catch(ProductNotFoundException e) {
 			redirectAttributes.addFlashAttribute("message", e.getMessage());

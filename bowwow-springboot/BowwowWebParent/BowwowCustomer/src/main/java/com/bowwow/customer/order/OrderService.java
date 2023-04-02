@@ -17,17 +17,14 @@ public class OrderService {
 	@Autowired
 	private OrderRepository orderRepo;
 
-	// 구매 저장
 	public void save(Order orderNow) {
 		orderRepo.save(orderNow);
 	}
 
-	// 해당 유저의 구매 불러오기
 	public List<Order> findByUserId(Integer userId) {
 		return orderRepo.findByUserId(userId);
 	}
 
-	// 해당 유저의 구매한 제품 체크
 	public boolean checkProductPurchase(int userId, int productId) {
         List<Order> orders = orderRepo.findByUserId(userId);
         for (Order order : orders) {

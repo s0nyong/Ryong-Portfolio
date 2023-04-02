@@ -11,7 +11,7 @@ public class ProductRestController {
 	@Autowired
 	private ProductService service;
 	
-	@PostMapping("/product/check_subname")
+	@PostMapping("/product/check_subname")	//subName 중복체크
 	public String checkUnique(@Param("id") Integer id, @Param("subName") String subName) {
 		return service.isSubNameUnique(id, subName)? "OK" : "Duplicated";
 	}

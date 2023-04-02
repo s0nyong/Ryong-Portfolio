@@ -8,6 +8,7 @@ import com.bowwow.common.entity.User;
 @Repository
 public interface UserRepository extends PagingAndSortingRepository<User, Integer> {
 
+
 	public User findByEmail(String email);
 
 	public User findByNickName(String nickName);

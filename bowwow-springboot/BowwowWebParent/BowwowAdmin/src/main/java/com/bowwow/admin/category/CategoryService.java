@@ -24,7 +24,7 @@ public class CategoryService {
         Iterable<Category> categoriesInDB = caRepo.findAll();
 		
 		for(Category category : categoriesInDB) {	
-			if(category.getParent() == null) {		
+			if(category.getParent() == null) {		//부모 category가 null일 경우  (대분류)
 				categoriesUserInForm.add(category);			
 				
 				Set<Category> children = category.getChildren();

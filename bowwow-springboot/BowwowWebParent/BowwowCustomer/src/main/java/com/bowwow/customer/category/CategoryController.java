@@ -81,8 +81,8 @@ public class CategoryController {
             model.addAttribute("listproduct", productList.getContent());
         }
         
-        // Like 표시
         if(p != null) {
+        	
 	    	List <Product> listpro = proService.listAll();
 	    	List<Integer> userLikes =  new ArrayList<>();
 	    	List<Integer> userUnLikes =  new ArrayList<>();

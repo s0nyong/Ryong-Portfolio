@@ -90,7 +90,7 @@ public class InquiryController {
 		model.addAttribute("user", user);
 		}
 		Pageable pageable = PageRequest.of(pageNum - 1, InquiryService.INQUIRY_PER_PAGE);
-		Page<Inquiry> page = inquiryService.findParentInquiriesByProduct(productId, pageable); // 해당 상품의 부모 문의 가져옴
+		Page<Inquiry> page = inquiryService.findParentInquiriesByProduct(productId, pageable); // 해당 삼품의 부모 문의 가져옴
 		List<Inquiry> parentInquiries = page.getContent();
 		
 		model.addAttribute("currentPage", pageNum);

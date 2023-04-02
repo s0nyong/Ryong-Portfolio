@@ -14,12 +14,10 @@ public class OrderDetailService {
 	@Autowired
 	private OrderDetailRepository detailRepo;
 
-	// 구매 세부 내용 저장
 	public void save(OrderDetail orderDetail) {
 		detailRepo.save(orderDetail);
 	}
 
-	// 해당 구매 세부 내용 불러오기
 	public OrderDetail findById(int orderDetailId) {
 		return detailRepo.findById(orderDetailId).get();
 	}

@@ -11,10 +11,8 @@ import com.bowwow.common.entity.User;
 
 public interface CartRepository extends PagingAndSortingRepository<Cart, Integer> {
 	
-	// 해당 유저의 장바구니 해당 제품 불러오기
 	@Query("SELECT c FROM Cart c WHERE c.user =?1 AND c.product =?2")
 	public Cart checkUserProduct(User user, Product product);
 
-	// 해당 유저의 장바구니 제품 리스트 불러오기
 	public List<Cart> findByUserId(Integer userId);
 }

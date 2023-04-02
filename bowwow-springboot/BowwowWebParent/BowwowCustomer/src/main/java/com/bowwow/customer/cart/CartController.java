@@ -34,13 +34,11 @@ public class CartController {
 	@Autowired
     private CategoryService categoryService;
 	
-	// 카테고리 불러오기
 	@ModelAttribute("parentCategories")
     public List<Category> getParentCategories() {
         return categoryService.getParentCategories();
     }
 	
-	// 장바구니 리스트 불러오기
 	@GetMapping("/cart")
 	public String listUsersCart(Principal p, Model model) {
 		List<Cart> cartList = new ArrayList<>();
@@ -48,12 +46,12 @@ public class CartController {
 			cartList = null;
 		}else {
 			cartList = cartService.getUserCart(p.getName());
+			
 	    }
 		model.addAttribute("cartList", cartList);
 		return "users/cart";
 	}
 	
-	// 장바구니 제품 추가
 	@GetMapping("/cart/add")
 	public String addCart(@RequestParam(name="productId") Integer productId, Principal p, @RequestParam("quantity") int count) {
 		User theUser = userService.findByEmail(p.getName());
@@ -64,7 +62,7 @@ public class CartController {
 		return "redirect:/cart";
 	}
 	
-	// 장바구니 제품 삭제
+	
 	@GetMapping("/cart/delete")
 	public String deleteCartItem(@RequestParam(name="selectdItem") ArrayList<Integer> theCartId) {
 		if(!theCartId.isEmpty()) {
